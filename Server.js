@@ -1,19 +1,25 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const routes = require('./routes');
-
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Use the routes defined in the ./routes directory
 app.use(routes);
 
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/socialMediaDB', {
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/socialmedia', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
 
-mongoose.set('debug', true);
-
-app.listen(PORT, () => console.log(`🌍 Connected on localhost:${PORT}`));
+mongoose.connection.once('open', () => {
+  console.log('Connected to MongoDB');
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+});
